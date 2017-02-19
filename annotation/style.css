@@ -1,0 +1,22 @@
+/*
+CSS style file for annotation project!
+*/
+
+#title {
+  background-color: #5DFDCB;
+  text-align: center;
+  color: #FFAF87;
+  font-family: sans-serif;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+body{
+  background-color: #C9F9FF;
+}
+
+video{
+  display: block;
+  width: auto;
+  margin: 0 auto;
+}

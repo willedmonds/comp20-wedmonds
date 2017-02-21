@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> notuber </title>
+    <script src="https://maps.googleapis.com/maps/api/js?key"></script>
+
+
+    <script>
+      var xhr = new XMLHttpRequest();
+      var uri = "https://defense-in-derpth.herokuapp.com/submit";
+
+      var lat;
+      var long;
+      var argument;
+
+      function init(){
+        if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(function(position){
+            lat = position.coords.latitude;
+            long = position.coords.longitude;
+            post();
+          })
+        }
+      }
+      function post(){
+        var username = "i3oxTCVc";
+        var argument = "username="+username+"&lat="+lat+"&lng="+long;
+
+        xhr.open('POST', uri, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(argument);
+      }
+      </script>
+  </head>
+  <body onload="init()">
+  </body>
+</html>

@@ -12,18 +12,28 @@
 
 <video src="https://www.cs.tufts.edu/comp/20/fail.mp4" id="failvideo" controls></video>
 <div id="lyrics">
-<table>
-  <
-</table>
-
 </div>
 
 
-<script>
-function changeText(text){
-    var old = document.getElementById("lyrics");
+<script type="text/javascript">
+var video = document.getElementById("failvideo");
+var lyric = document.getElementById("lyrics");
+video.addEventListener("timeupdate",function()
+{
+  console.log("This is working!");
+  var time = video.currentTime;
+  if(time > 9 && time < 13){
+    lyric. = "<h3> You've got me feelin' emotions </h3>";
+  }
+  else if(time > 13 && time < 15){
+    lyric.innerHTML = "<h3> Deeper than I've ever dreamed of </h3>";
+  }
+  else if(time > 18 && time < 21){
+    lyric.innerHTML = "<h3> You've got me feelin' emotions </h3>";
+  }
 
-}
+},false);
+
 </script>
 </body>
 </html>

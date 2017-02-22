@@ -39,6 +39,8 @@
             var map;
             var marker;
             var driverList = [];
+            var passList = [];
+
             var response;
             var markerarray = [];
 
@@ -54,7 +56,7 @@
                         getVehicles(response);
 
                     else if(response.hasOwnProperty("passengers")){
-                        //getPassengers(response);
+                        getPassengers(response);
                     }
                 
                 else console.log("notready");
@@ -64,8 +66,7 @@
 
             function getVehicles(response)
             {
-                console.log("We out here");
-                for(var cars in response.vehicles){
+                    for(var cars in response.vehicles){
                     var newCar = response.vehicles[cars];
                     console.log(newCar.lat + " " + newCar.lng);
                     
@@ -74,11 +75,24 @@
                         username: newCar.username
                         });
                 }
-                console.log("TEST");
-                console.log(driverList[0].position.lat());
-                render();
+                var image = "vehicle.png";
+                render(driverList,image);
             }
 
+            function getPassengers(response)
+            {
+                for(var ppl in response.passengers){
+                    var newPer = response.passengers[ppl];
+                    console.log(newPer.lat + " " + newPer.lng);
+                    
+                    passList.push({
+                        position: new google.maps.LatLng(newPer.lat, newPer.lng),
+                        username: newPer.username
+                        });
+                }
+                var image = "passenger.png";
+                render(passList,image);
+            }
             function init(){
                 map = new google.maps.Map(document.getElementById("myMap"),
                     options);
@@ -97,25 +111,31 @@
                 }
             }
 
-            function render(){
-                for(var i in driverList){
-                    markerarray[i] = new google.maps.Marker({
-                        position: driverList[i].position,
-                        title: driverList[i].username
-                    })
-                    markerarray[i].setMap(map);
-                    google.maps.event.addListener(markerarray[i], 'click', function() {
-                        infowindow.setContent(markerarray[i].title);
-                        infowindow.open(map, markerarray[i]);
-                    });
-                }
+            function render(list, image){
+
+        for(var i in list){
+                marker = new google.maps.Marker({
+                        position: list[i].position,
+                        title: list[i].username,
+                        icon: image,
+                        map: map
+                })
+
+                google.maps.event.addListener(marker, 'click', 
+                        (function(marker, i) {
+                        return function() {
+                                infowindow.setContent(list[i].username);
+                                infowindow.open(map, marker);
+                        }
+                })(marker, i));
+        }
 
 
                 me = new google.maps.LatLng(lat,long);
                 map.panTo(me);
                 marker = new google.maps.Marker({
                     position: me,
-                    title: "It's me!"
+                    title: "Me!",
                 });
                 marker.setMap(map);
                 google.maps.event.addListener(marker, 'click', function() {

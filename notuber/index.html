@@ -4,23 +4,7 @@
         <title> notuber </title>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
         <script src="http://maps.google.com/maps/api/js?key=AIzaSyAm2BakAhRSGITqiZDd7SpqC1EzE_Ghsso&libraries=geometry"></script>
-        <style>
-                        html {
-                        height: 100%;
-                        font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-                        }
-
-                        body {
-                                height: 100%;
-                                margin: 0px;
-                                padding: 0px;
-                        }
-
-                        #myMap {
-                                width: 100%;
-                                height: 100%;
-                        }
-        </style>
+        <link rel="stylesheet" href="notuberStyle.css"/>
 
         <script>
         var xhr = new XMLHttpRequest();
@@ -71,16 +55,16 @@
         function getVehicles(response)
         {
                 for(var cars in response.vehicles){
-                var newCar = response.vehicles[cars];
-                console.log(newCar.lat + " " + newCar.lng);
-                var pos = new google.maps.LatLng(newCar.lat, newCar.lng);
+                    var newCar = response.vehicles[cars];
+                    console.log(newCar.lat + " " + newCar.lng);
+                    var pos = new google.maps.LatLng(newCar.lat, newCar.lng);
 
-                driverList.push({
-                        position: pos,
-                        username: newCar.username,
-                        distance: DistanceBetween(me, pos) * 0.000621371
-                        });
-                }       
+                    driverList.push({
+                            position: pos,
+                            username: newCar.username,
+                            distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
+                            });
+                    }       
 
                 var image = "vehicle.png";
                 render(driverList,image);
@@ -96,8 +80,8 @@
                         passList.push({
                                 position: pos,
                                 username: newPer.username,
-                                distance: DistanceBetween(me, pos) * 0.000621371
-                                
+                                distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
+                            
                         });
                 }
 
@@ -115,7 +99,7 @@
                 if(navigator.geolocation){
                         navigator.geolocation.getCurrentPosition(function(position){
                         lat = position.coords.latitude;
-                long = position.coords.longitude;
+                        long = position.coords.longitude;
                 post();
                 render();
             })

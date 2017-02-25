@@ -20,3 +20,10 @@ video{
   width: auto;
   margin: 0 auto;
 }
+
+#lyrics {
+  text-align: center;
+  padding: 25px;
+  font-weight: bold;
+  font-size: 25px;
+}

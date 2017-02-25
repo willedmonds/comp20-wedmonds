@@ -1,161 +1,158 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title> notuber </title>
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <script src="http://maps.google.com/maps/api/js?key=AIzaSyAm2BakAhRSGITqiZDd7SpqC1EzE_Ghsso&libraries=geometry"></script>
-        <link rel="stylesheet" href="notuberStyle.css"/>
+  <head>
+    <title> notuber </title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyAm2BakAhRSGITqiZDd7SpqC1EzE_Ghsso&libraries=geometry"></script>
+    <link rel="stylesheet" href="notuberStyle.css"/>
 
-        <script>
-        var xhr = new XMLHttpRequest();
-        var uri = "https://defense-in-derpth.herokuapp.com/submit";
-        var lat = 0;
-        var long = 0;
-        var argument;
-        var me = new google.maps.LatLng(lat,long);
-        var infowindow = new google.maps.InfoWindow();
+    <script>
+    var xhr = new XMLHttpRequest();
+    var uri = "https://defense-in-derpth.herokuapp.com/submit";
+    var lat = 0;
+    var long = 0;
+    var argument;
+    var me = new google.maps.LatLng(lat,long);
+    var infowindow = new google.maps.InfoWindow();
 
-        var options = {
-                        zoom: 10,
-                        center: me,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                  };
-        var map;
-        var marker;
-        var driverList = [];
-        var passList = [];
+    var options = {
+      zoom: 10,
+      center: me,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map;
+    var marker;
+    var driverList = [];
+    var passList = [];
+    var response;
+    var markerarray = [];
 
-        var response;
-        var markerarray = [];
+    function DistanceBetween(coord1, coord2)
+    {
+      var distance = google.maps.geometry.spherical.computeDistanceBetween(coord1, coord2);
+      return distance;
+    }
 
-        function DistanceBetween(coord1, coord2)
-        {
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(coord1, coord2);
-                return distance;
-        }
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState == 4){     
+        /* Get the response */
 
-        xhr.onreadystatechange = function(){
-                if(xhr.readyState == 4){     
-                        /* Get the response */
+        response = xhr.responseText;
+        console.log(response);
+        /* Parse into an object */
+        response = JSON.parse(response);
 
-                        response = xhr.responseText;
+        if(response.hasOwnProperty("vehicles"))
+          getVehicles(response);
 
-                        /* Parse into an object */
-                        response = JSON.parse(response);
+        else if(response.hasOwnProperty("passengers"))
+          getPassengers(response);
 
-                        if(response.hasOwnProperty("vehicles"))
-                                getVehicles(response);
+      }
+    }
 
-                        else if(response.hasOwnProperty("passengers"))
-                                getPassengers(response);
+    function getVehicles(response)
+    {
+      for(var cars in response.vehicles){
+        var newCar = response.vehicles[cars];
+        console.log(newCar.lat + " " + newCar.lng);
+        var pos = new google.maps.LatLng(newCar.lat, newCar.lng);
 
-                }
-            }
+        driverList.push({
+          position: pos,
+          username: newCar.username,
+          distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
+        });
+      }
+      var image = "vehicle.png";
+      render(driverList,image);
+    }
 
-        function getVehicles(response)
-        {
-                for(var cars in response.vehicles){
-                    var newCar = response.vehicles[cars];
-                    console.log(newCar.lat + " " + newCar.lng);
-                    var pos = new google.maps.LatLng(newCar.lat, newCar.lng);
+    function getPassengers(response)
+    {
+      for(var ppl in response.passengers){
+        var newPer = response.passengers[ppl];
+        console.log(newPer.lat + " " + newPer.lng);
+        var pos = new google.maps.LatLng(newPer.lat, newPer.lng);
 
-                    driverList.push({
-                            position: pos,
-                            username: newCar.username,
-                            distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
-                            });
-                    }       
+        passList.push({
+          position: pos,
+          username: newPer.username,
+          distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
+        });
+      }
 
-                var image = "vehicle.png";
-                render(driverList,image);
-        }
+      var image = "passenger.png";
+      render(passList,image);
+    }
 
-        function getPassengers(response)
-        {
-                for(var ppl in response.passengers){
-                        var newPer = response.passengers[ppl];
-                        console.log(newPer.lat + " " + newPer.lng);
-                        var pos = new google.maps.LatLng(newPer.lat, newPer.lng);
+    function init(){
+      map = new google.maps.Map(document.getElementById("myMap"),
+      options);
+      getLocale();
+    }
 
-                        passList.push({
-                                position: pos,
-                                username: newPer.username,
-                                distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
-                            
-                        });
-                }
+    function getLocale(){
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(function(position){
+          lat = position.coords.latitude;
+          long = position.coords.longitude;
+          post();
+          render();
+        })
+      }
+      else {
+        alert("Geolocation is not supported by your web browser.  What a shame!");
+      }
+    }
 
-                var image = "passenger.png";
-                render(passList,image);
-        }
+    function render(list, image)
+    {
+      for(var i in list){
+        marker = new google.maps.Marker({
+          position: list[i].position,
+          title: list[i].username,
+          icon: image,
+          map: map
+      })
 
-        function init(){
-                map = new google.maps.Map(document.getElementById("myMap"),
-                        options);
-                getLocale();
-        }
-
-        function getLocale(){
-                if(navigator.geolocation){
-                        navigator.geolocation.getCurrentPosition(function(position){
-                        lat = position.coords.latitude;
-                        long = position.coords.longitude;
-                post();
-                render();
-            })
-        }
-        else {
-                alert("Geolocation is not supported by your web browser.  What a shame!");
-        }
-        }
-
-        function render(list, image){
-
-        for(var i in list){
-                marker = new google.maps.Marker({
-                        position: list[i].position,
-                        title: list[i].username,
-                        icon: image,
-                        map: map
-                })
-
-                google.maps.event.addListener(marker, 'click', 
-                        (function(marker, i) {
-                        return function() {
-                                infowindow.setContent(
-                                        list[i].username+"</br>"+list[i].distance + " Miles"
-                                        );
-                                infowindow.open(map, marker);
-                        }
-                })(marker, i));
-        }
+        google.maps.event.addListener(marker, 'click', 
+        (function(marker, i) {
+          return function() {
+          infowindow.setContent(
+          list[i].username+"</br>"+list[i].distance + " Miles"
+          );
+          infowindow.open(map, marker);
+          }
+        })(marker, i));
+      }
 
 
-                me = new google.maps.LatLng(lat,long);
-                map.panTo(me);
-                marker = new google.maps.Marker({
-                    position: me,
-                    title: "<h3> i3oxTCVc </h3></br>"
-                });
+      me = new google.maps.LatLng(lat,long);
+      map.panTo(me);
+      marker = new google.maps.Marker({
+        position: me,
+        title: "<h3> i3oxTCVc </h3></br>"
+      });
 
-                marker.setMap(map);
-                google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(marker.title);
-					infowindow.open(map, marker);
-				});
-                
-            }
-            function post(){
-                var username = "i3oxTCVc";
-                var argument = "username="+username+"&lat="+lat+"&lng="+long;
-                xhr.open('POST', uri, true);
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.send(argument);
-            }
+      marker.setMap(map);
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(marker.title);
+        infowindow.open(map, marker);
+      });
 
-            </script>
-        </head>
-    <body onload="init()">
-        <div id="myMap"></div>
-    </body>
+      }
+      function post(){
+        var username = "i3oxTCVc";
+        var argument = "username="+username+"&lat="+lat+"&lng="+long;
+        xhr.open('POST', uri, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(argument);
+      }
+
+    </script>
+  </head>
+  <body onload="init()">
+    <div id="myMap"></div>
+  </body>
 </html>

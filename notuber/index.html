@@ -7,49 +7,60 @@
     <link rel="stylesheet" href="notuberStyle.css"/>
 
     <script>
+    // Initialize all variables
     var xhr = new XMLHttpRequest();
     var uri = "https://defense-in-derpth.herokuapp.com/submit";
     var lat = 0;
     var long = 0;
     var argument;
+    var map;
+    var marker;
+    var response;
+
+    // Must set me as a google maps LatLng
     var me = new google.maps.LatLng(lat,long);
     var infowindow = new google.maps.InfoWindow();
 
+    // Setting map options
     var options = {
       zoom: 10,
       center: me,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-    var map;
-    var marker;
+
+    // Must set up arrays here
     var driverList = [];
     var passList = [];
-    var response;
     var markerarray = [];
 
+    // Computes distance between two google maps coordinate pairs
     function DistanceBetween(coord1, coord2)
     {
       var distance = google.maps.geometry.spherical.computeDistanceBetween(coord1, coord2);
       return distance;
     }
 
+    // On a state change of the 
     xhr.onreadystatechange = function(){
       if(xhr.readyState == 4){     
         /* Get the response */
-
         response = xhr.responseText;
-        console.log(response);
+
         /* Parse into an object */
         response = JSON.parse(response);
 
+        // If the response has a vehicles array
         if(response.hasOwnProperty("vehicles"))
           getVehicles(response);
 
+        // If the response has a passenger array
         else if(response.hasOwnProperty("passengers"))
           getPassengers(response);
-
       }
     }
+
+    // If the JSON stream has vehicles, then loop through them, assign them
+    // location data, get distance, and push those to the driver array
 
     function getVehicles(response)
     {
@@ -61,12 +72,18 @@
         driverList.push({
           position: pos,
           username: newCar.username,
+          // Convert to miles and only have 2 decimals places
           distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
         });
       }
       var image = "vehicle.png";
+
+      // Render the drivers with car images
       render(driverList,image);
     }
+
+    // If the JSON feed has passengers, loop through them and get location,
+    // distance, and add to array.
 
     function getPassengers(response)
     {
@@ -78,27 +95,31 @@
         passList.push({
           position: pos,
           username: newPer.username,
+          // Must convert from meters to miles and only use 2 decimals
           distance: (DistanceBetween(me, pos) * 0.000621371).toFixed(2)
         });
       }
-
       var image = "passenger.png";
+
+      // Render with passenger image
       render(passList,image);
     }
 
+    // Initialize the map and get my location
     function init(){
       map = new google.maps.Map(document.getElementById("myMap"),
       options);
       getLocale();
     }
 
+    // Get my locaiton and then post to the server with it and render the map
     function getLocale(){
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
           lat = position.coords.latitude;
           long = position.coords.longitude;
           post();
-          render();
+          //render();
         })
       }
       else {
@@ -106,6 +127,7 @@
       }
     }
 
+    // Render all of the markers!
     function render(list, image)
     {
       for(var i in list){
@@ -114,7 +136,7 @@
           title: list[i].username,
           icon: image,
           map: map
-      })
+        })
 
         google.maps.event.addListener(marker, 'click', 
         (function(marker, i) {
@@ -127,28 +149,32 @@
         })(marker, i));
       }
 
-
-      me = new google.maps.LatLng(lat,long);
+      // Set my own marker with different info
       map.panTo(me);
       marker = new google.maps.Marker({
         position: me,
-        title: "<h3> i3oxTCVc </h3></br>"
+        title: "i3oxTCVc",
+        map: map
       });
 
-      marker.setMap(map);
+      // Add listener for myself
       google.maps.event.addListener(marker, 'click', function() {
-        infowindow.setContent(marker.title);
+        infowindow.setContent(marker.title + "</br>" + 0 + " Miles");
         infowindow.open(map, marker);
       });
+    }
 
-      }
-      function post(){
-        var username = "i3oxTCVc";
-        var argument = "username="+username+"&lat="+lat+"&lng="+long;
-        xhr.open('POST', uri, true);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.send(argument);
-      }
+    // Post to the server to get the JSON feed back
+    function post(){
+      
+      // Get my location before posting to server
+      me = new google.maps.LatLng(lat,long);
+      var username = "i3oxTCVc";
+      var argument = "username="+username+"&lat="+lat+"&lng="+long;
+      xhr.open('POST', uri, true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.send(argument);
+    }
 
     </script>
   </head>

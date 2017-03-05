@@ -19,25 +19,20 @@
   var video = document.getElementById("failvideo");
   var lyric = document.getElementById("lyrics");
 
-  var chorus = [
-  "You've got me feelin' emotions",
-  "Deeper than I've ever dreamed of",
-  "Higher than the heavens above"];
-
   video.addEventListener("timeupdate",function()
   {
     var time = video.currentTime;
-      if((time > 9 && time < 13) || (time > 59 && time < 64) ||
-          (time > 68 && time < 72)){
-        lyric.innerHTML = chorus[0];
+      if((time > 9 && time < 13) || (time > 17 && time < 19) || 
+        (time > 59 && time < 64) || (time > 68 && time < 72)){
+        lyric.innerHTML = "You've got me feelin' emotions";
       }
-      else if((time > 13 && time < 15) || (time > 64 && time < 68)){
-        lyric.innerHTML = chorus[1];
+      else if((time > 13 && time < 17) || (time > 64 && time < 68)){
+        lyric.innerHTML = "Deeper than I've ever dreamed of";
       }
-      else if((time > 18 && time < 21) || (time > 72)){
-        lyric.innerHTML = chorus[2];
+      else if((time > 19 && time < 22) || (time > 72)){
+        lyric.innerHTML = "Higher than the heavens above";
       }
-      else if(time > 21 && time < 26.75){
+      else if(time > 22 && time < 26.75){
         lyric.innerHTML = "I feel good, I feel nice";
       }
       else if(time > 26.75 && time < 32.5){

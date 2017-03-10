@@ -8,10 +8,15 @@
   <script>
     
     $.get("https://messagehub.herokuapp.com/messages.json",function(response){
-      var to_display = "<p>" + response[0].username + "</p>";
-      console.log(response[0].username);
-      $("#messages").html(to_display);
-  });
+
+      console.log(response);
+      $("#messages").empty();
+      $.each(response, function(index){
+        to_add = "<p>" + response[index].content + " by " + response[index].username + "</p>";
+      $("#messages").append(to_add)
+      });
+    });
+
   </script>
 </head>
 

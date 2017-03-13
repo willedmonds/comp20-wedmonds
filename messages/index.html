@@ -6,10 +6,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
   <script>
+    // Get automatically parses the JSON feed so I just access each element
+    // to create the content.
+    // Callback function runs when response is recieved
     
     $.get("https://messagehub.herokuapp.com/messages.json",function(response){
-
-      console.log(response);
       $("#messages").empty();
       $.each(response, function(index){
         to_add = "<p>" + response[index].content + " by " + response[index].username + "</p>";

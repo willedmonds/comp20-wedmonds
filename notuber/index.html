@@ -66,9 +66,8 @@
     {
       for(var cars in response.vehicles){
         var newCar = response.vehicles[cars];
-        console.log(newCar.lat + " " + newCar.lng);
+       
         var pos = new google.maps.LatLng(newCar.lat, newCar.lng);
-
         driverList.push({
           position: pos,
           username: newCar.username,
@@ -89,7 +88,6 @@
     {
       for(var ppl in response.passengers){
         var newPer = response.passengers[ppl];
-        console.log(newPer.lat + " " + newPer.lng);
         var pos = new google.maps.LatLng(newPer.lat, newPer.lng);
 
         passList.push({

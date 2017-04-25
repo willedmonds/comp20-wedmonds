@@ -3,6 +3,20 @@
 <head>
   <title> Security - Will Edmonds </title>
 </head>
+<style type="text/css">
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+    img {
+    width: 50%;
+    height: auto;
+
+}
+</style>
+
 <body>
   <h1 align="center"> Assignment 4: Security and Privacy Assessment of Client-Side and Server-Side </h1>
 
@@ -29,23 +43,46 @@
     Three Issues were found in the client's code:
     <ul>
       <li> Cross site scripting to access database entries </li>
-      <li> Cross site scripting to rewrite contents of page </li>
-      <li> MongoDB username and password are hardcoded </li>
+      <li> Send mongoDB command as username parameter </li>
+      <li> Lat and Lng parameters can be set to strings </li>
     </ul>
   </p>
   <h2> Issues found </h2>
     <ul>
-      <li> The first vulnerability found was the ability to inject malicious javascript code using the post functionality. When passengers are displayed on the index page, all entries are retrieved from the database and this script is run. I submitted code to change the actual contents of the page to a picture from a random website. </li>
-
-      <li> The second vulnerability uncovered was the ability to access all database entries from the index page. Since I knew the user utilized a mongoDB, I was able to access all collections and even delete collections. </li>
-
-      <li> The last problem was the fact that the client hardcoded his username and password for MongoDB in his sourcecode which allowed me to access their Mongo Page and mess with the database. </li>
-
+      <li> 
+        <h3> Cross site scripting to access database entries  </h3>
+        <h4> Severity - Medium </h4>
+        The first vulnerability found was the ability to inject malicious javascript code using the POST /submit route. When passengers are displayed on the index page, all entries are retrieved from the database and this script is run. I submitted code to alert a message to the browser screen. This can be seen in the popup screenshots. This is a medium level problem because malicious scripts can be run to redirect and change the page contents but not access private data. This could be fixed by removing special characters from user input.
+      </li>
+        <img src="popup1.png" alt="popup image">
+        <img src="popup2.png" alt="second popup image">
+      <h3> Send mongoDB command as username parameter <h3>
+      <h4> Severity - High </h4>
+      <li>
+        The next problem was that I was able to send a mongoDB command as a username url query and access all vehicles in the collecton from the
+        /vehicles.json page. This meant that all data in the collection could be read which presents a high security issue for everything submitted. This could be avoided by stripping special characters from user queries before accessing the database. 
+      </li>
+        <img src="vehicles.png" alt="screenshot of vehicle vulnerability">
+      
+      <h3> Lat and Lng parameters can be set to strings </h3>
+      <h4> Severity - Medium </h4>
+      <li> 
+        The last problem discovered is that the client did not parse user input into floating point numbers for the latitude and longitude parameters. This means that a program using this server would recieve incorrect data and possibly crash. Recommendations are converting lat and lng to floating point numbers and checking if the conversion succeeded before adding to the database. This is medium priority as it would not break everything. 
+      </li>
     </ul>
 
   <h2> Conclusion </h2>
-    <p> This client's code is implemented correctly but 
+    <p> 
+      This client's code is implemented correctly but has some security and stability errors that have fairly simple fixes. Future considerations include testing code for vulnerabilities and then parsing user input before using it. Considering the severity of these problems, I would estimate a full fix of the application and all testing would cost around $500. 
+    </p>
   <h2> References </h2>
-
+    <ul>
+      <li>
+        Ming's lectures on security
+      </li>
+      <li>
+        http://blog.websecurify.com/2014/08/hacking-nodejs-and-mongodb.html
+      </li>
+    </ul>
 </body>
 </html>

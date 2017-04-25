@@ -76,6 +76,7 @@ img {
         <h4> Severity - Medium </h4>
         A final flaw is the ability to submit general HTML tags into the client's database so they render on the GET "/" page. To test this I sent an image tag linking to a third party website that rendered a dog picture on the page. This flaw means that this page could be manipulated to display pretty much anything, including a redirect to another page. Fixing this would be the same as the first vulnerability, simply stripping the users input of special characters. 
       </li>
+        <img src="dog_code.png" alt="code for submitting dog image">
         <img src="doggy.png" alt="dog picture on passengers page.">
     </ul>
 

@@ -27,6 +27,8 @@
       center: me,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+    map = new google.maps.Map(document.getElementById("myMap"),
+      options);
 
     // Must set up arrays here
     var driverList = [];
@@ -164,7 +166,6 @@
 
     // Post to the server to get the JSON feed back
     function post(){
-      
       // Get my location before posting to server
       me = new google.maps.LatLng(lat,long);
       var username = "i3oxTCVc";
